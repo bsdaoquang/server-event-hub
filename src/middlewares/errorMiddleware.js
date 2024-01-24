@@ -8,6 +8,8 @@ const errorMiddleHandle = (err, _req, res, next) => {
 		statusCode,
 		stack: err.stack,
 	});
+
+	next();
 };
 
 module.exports = errorMiddleHandle;
