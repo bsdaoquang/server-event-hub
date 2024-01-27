@@ -4,6 +4,27 @@ const UserModel = require('../models/userModel');
 const bcryp = require('bcrypt');
 const asyncHandle = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+
+const nodemailerConfig = process.env.PRODUCTION
+	? {
+			host: 'smtp.gmail.com',
+			port: 587,
+			auth: {
+				user: process.env.USERNAME_EMAIL,
+				pass: process.env.PASSWORD_EMAIL,
+			},
+	  }
+	: {
+			host: 'smtp.ethereal.email',
+			port: 587,
+			auth: {
+				user: 'aylin.steuber45@ethereal.email',
+				pass: 's1R7aDHH3dh4G3BZzd',
+			},
+	  };
+
+const transporter = nodemailer.createTransport(nodemailerConfig);
 
 const getJsonWebToken = async (email, id) => {
 	const payload = {
@@ -16,6 +37,30 @@ const getJsonWebToken = async (email, id) => {
 
 	return token;
 };
+
+const handleSendMail = async (val, email) => {
+	try {
+		const result = await transporter.sendMail({
+			from: `"Support EventHub Appplication" <aylin.steuber45@ethereal.email>`,
+			to: email,
+			subject: 'Verification email code',
+			text: 'Your code to verification email',
+			html: '<h1>1234</h1>',
+		});
+
+		console.log(result);
+	} catch (error) {
+		console.log(`Can not send email ${error}`);
+	}
+};
+
+const verification = asyncHandle(async (req, res) => {
+	const { email } = req.body;
+
+	await handleSendMail('', email);
+
+	res.send('fafs');
+});
 
 const register = asyncHandle(async (req, res) => {
 	const { email, fullname, password } = req.body;
@@ -78,4 +123,5 @@ const login = asyncHandle(async (req, res) => {
 module.exports = {
 	register,
 	login,
+	verification,
 };
