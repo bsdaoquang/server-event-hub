@@ -5,26 +5,16 @@ const bcryp = require('bcrypt');
 const asyncHandle = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-const nodemailerConfig = process.env.PRODUCTION
-	? {
-			host: 'smtp.gmail.com',
-			port: 587,
-			auth: {
-				user: process.env.USERNAME_EMAIL,
-				pass: process.env.PASSWORD_EMAIL,
-			},
-	  }
-	: {
-			host: 'smtp.ethereal.email',
-			port: 587,
-			auth: {
-				user: 'aylin.steuber45@ethereal.email',
-				pass: 's1R7aDHH3dh4G3BZzd',
-			},
-	  };
-
-const transporter = nodemailer.createTransport(nodemailerConfig);
+const transporter = nodemailer.createTransport({
+	host: 'smtp.gmail.com',
+	port: 587,
+	auth: {
+		user: process.env.USERNAME_EMAIL,
+		pass: process.env.PASSWORD_EMAIL,
+	},
+});
 
 const getJsonWebToken = async (email, id) => {
 	const payload = {
@@ -40,26 +30,38 @@ const getJsonWebToken = async (email, id) => {
 
 const handleSendMail = async (val, email) => {
 	try {
-		const result = await transporter.sendMail({
-			from: `"Support EventHub Appplication" <aylin.steuber45@ethereal.email>`,
+		await transporter.sendMail({
+			from: `"Support EventHub Appplication" <${process.env.USERNAME_EMAIL}>`,
 			to: email,
 			subject: 'Verification email code',
 			text: 'Your code to verification email',
-			html: '<h1>1234</h1>',
+			html: `<h1>${val}</h1>`,
 		});
 
-		console.log(result);
+		return 'OK';
 	} catch (error) {
-		console.log(`Can not send email ${error}`);
+		return error;
 	}
 };
 
 const verification = asyncHandle(async (req, res) => {
 	const { email } = req.body;
 
-	await handleSendMail('', email);
+	const verificationCode = Math.round(1000 + Math.random() * 9000);
 
-	res.send('fafs');
+	try {
+		await handleSendMail(verificationCode, email);
+
+		res.status(200).json({
+			message: 'Send verification code successfully!!!',
+			data: {
+				code: verificationCode,
+			},
+		});
+	} catch (error) {
+		res.status(401);
+		throw new Error('Can not send email');
+	}
 });
 
 const register = asyncHandle(async (req, res) => {
