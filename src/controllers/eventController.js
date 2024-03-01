@@ -3,6 +3,27 @@
 const asyncHandle = require('express-async-handler');
 const EventModel = require('../models/eventModel');
 
+const calcDistanceLocation = ({
+	currentLat,
+	curentLong,
+	addressLat,
+	addressLong,
+}) => {
+	const r = 6371;
+	const dLat = toRoad(addressLat - currentLat);
+	const dLon = toRoad(addressLong - curentLong);
+
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.sin(dLon / 2) *
+			Math.sin(dLon / 2) *
+			Math.cos(toRoad(currentLat)) *
+			Math.cos(toRoad(addressLat));
+	return r * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+};
+
+const toRoad = (val) => (val * Math.PI) / 180;
+
 const addNewEvent = asyncHandle(async (req, res) => {
 	const body = req.body;
 
@@ -21,4 +42,30 @@ const addNewEvent = asyncHandle(async (req, res) => {
 	}
 });
 
-module.exports = { addNewEvent };
+const getEvents = asyncHandle(async (req, res) => {
+	const { lat, long, distance } = req.query;
+
+	const events = await EventModel.find({});
+	const items = [];
+	if (events.length > 0) {
+		events.forEach((event) => {
+			const eventDistance = calcDistanceLocation({
+				curentLong: long,
+				currentLat: lat,
+				addressLat: event.position.lat,
+				addressLong: event.position.long,
+			});
+
+			if (eventDistance < distance) {
+				items.push(event);
+			}
+		});
+	}
+
+	res.status(200).json({
+		message: 'get events ok',
+		data: items,
+	});
+});
+
+module.exports = { addNewEvent, getEvents };
