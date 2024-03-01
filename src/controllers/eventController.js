@@ -46,26 +46,34 @@ const getEvents = asyncHandle(async (req, res) => {
 	const { lat, long, distance } = req.query;
 
 	const events = await EventModel.find({});
-	const items = [];
-	if (events.length > 0) {
-		events.forEach((event) => {
-			const eventDistance = calcDistanceLocation({
-				curentLong: long,
-				currentLat: lat,
-				addressLat: event.position.lat,
-				addressLong: event.position.long,
-			});
 
-			if (eventDistance < distance) {
-				items.push(event);
-			}
+	if (lat && long && distance) {
+		const items = [];
+		if (events.length > 0) {
+			events.forEach((event) => {
+				const eventDistance = calcDistanceLocation({
+					curentLong: long,
+					currentLat: lat,
+					addressLat: event.position.lat,
+					addressLong: event.position.long,
+				});
+
+				if (eventDistance < distance) {
+					items.push(event);
+				}
+			});
+		}
+
+		res.status(200).json({
+			message: 'get events ok',
+			data: items,
+		});
+	} else {
+		res.status(200).json({
+			message: 'get events ok',
+			data: events,
 		});
 	}
-
-	res.status(200).json({
-		message: 'get events ok',
-		data: items,
-	});
 });
 
 module.exports = { addNewEvent, getEvents };
