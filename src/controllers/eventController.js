@@ -43,11 +43,11 @@ const addNewEvent = asyncHandle(async (req, res) => {
 });
 
 const getEvents = asyncHandle(async (req, res) => {
-	const { lat, long, distance, limit } = req.query;
+	const { lat, long, distance, limit, date } = req.query;
 
 	const events = await EventModel.find({})
-		.sort('createdAt')
-		.limit(limit ?? 5);
+		.sort({ createdAt: -1 })
+		.limit(limit ?? 0);
 
 	if (lat && long && distance) {
 		const items = [];
@@ -68,12 +68,16 @@ const getEvents = asyncHandle(async (req, res) => {
 
 		res.status(200).json({
 			message: 'get events ok',
-			data: items,
+			data: date
+				? items.filter((element) => element.date > new Date(date))
+				: items,
 		});
 	} else {
 		res.status(200).json({
 			message: 'get events ok',
-			data: events,
+			data: date
+				? events.filter((element) => element.date > new Date(date))
+				: events,
 		});
 	}
 });
