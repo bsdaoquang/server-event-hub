@@ -23,6 +23,33 @@ const getAllUsers = asyncHandle(async (req, res) => {
 	});
 });
 
+const getUserDetail = asyncHandle(async (req, res) => {
+	const { uid } = req.query;
+
+	console.log(uid);
+	if (uid) {
+		console.log('aagagaa');
+		const user = await UserModel.findById(uid);
+
+		console.log(user);
+
+		if (user) {
+			console.log(user);
+
+			res.status(200).json({
+				message: 'User infomation',
+				data: [],
+			});
+		} else {
+			res.status(401);
+			throw new Error('User not found');
+		}
+	} else {
+		res.status(401);
+		throw new Error('Uid is missing!!!');
+	}
+});
+
 const getEventsFollowed = asyncHandle(async (req, res) => {
 	const { uid } = req.query;
 
@@ -43,4 +70,4 @@ const getEventsFollowed = asyncHandle(async (req, res) => {
 	}
 });
 
-module.exports = { getAllUsers, getEventsFollowed };
+module.exports = { getAllUsers, getEventsFollowed, getUserDetail };

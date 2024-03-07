@@ -117,7 +117,7 @@ const login = asyncHandle(async (req, res) => {
 	res.status(200).json({
 		message: 'Login successfully',
 		data: {
-			id: existingUser.id,
+			id: existingUser._id,
 			email: existingUser.email,
 			accesstoken: await getJsonWebToken(email, existingUser.id),
 		},

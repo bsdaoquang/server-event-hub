@@ -101,7 +101,7 @@ const getFollowers = asyncHandle(async (req, res) => {
 
 	if (event) {
 		res.status(200).json({
-			mess: 'Followers',
+			message: 'Followers',
 			data: event.followers ?? [],
 		});
 	} else {
