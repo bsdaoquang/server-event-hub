@@ -26,19 +26,21 @@ const getAllUsers = asyncHandle(async (req, res) => {
 const getUserDetail = asyncHandle(async (req, res) => {
 	const { uid } = req.query;
 
-	console.log(uid);
 	if (uid) {
-		console.log('aagagaa');
 		const user = await UserModel.findById(uid);
 
-		console.log(user);
-
 		if (user) {
-			console.log(user);
+			const data = {
+				id: user._id,
+				createdAt: user.createdAt,
+				email: user.email,
+				photoUrl: user.photoUrl ?? '',
+				name: user.name ?? '',
+			};
 
 			res.status(200).json({
 				message: 'User infomation',
-				data: [],
+				data,
 			});
 		} else {
 			res.status(401);
