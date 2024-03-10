@@ -34,6 +34,9 @@ const UserSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now(),
 	},
+	fcmTokens: {
+		type: [String],
+	},
 });
 
 const UserModel = mongoose.model('users', UserSchema);
