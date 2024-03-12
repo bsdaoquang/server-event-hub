@@ -6,6 +6,7 @@ const {
 	getEventsFollowed,
 	updateFcmToken,
 	getProfile,
+	getFollowes,
 } = require('../controllers/userController');
 
 const userRouter = Router();
@@ -14,5 +15,6 @@ userRouter.get('/get-all', getAllUsers);
 userRouter.get('/get-followed-events', getEventsFollowed);
 userRouter.post('/update-fcmtoken', updateFcmToken);
 userRouter.get('/get-profile', getProfile);
+userRouter.get('/get-followers', getFollowes);
 
 module.exports = userRouter;
