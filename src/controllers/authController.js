@@ -91,7 +91,7 @@ const register = asyncHandle(async (req, res) => {
 		message: 'Register new user successfully',
 		data: {
 			email: newUser.email,
-			id: newUser.id,
+			id: newUser._id,
 			accesstoken: await getJsonWebToken(email, newUser.id),
 		},
 	});
@@ -195,7 +195,7 @@ const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 
 	res.status(200).json({
 		message: 'Login with google successfully!!!',
-		data: user,
+		data: { ...user, id: existingUser._id },
 	});
 });
 
