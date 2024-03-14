@@ -8,6 +8,7 @@ const {
 	getProfile,
 	getFollowes,
 	updateProfile,
+	updateInterests,
 } = require('../controllers/userController');
 
 const userRouter = Router();
@@ -18,5 +19,6 @@ userRouter.post('/update-fcmtoken', updateFcmToken);
 userRouter.get('/get-profile', getProfile);
 userRouter.get('/get-followers', getFollowes);
 userRouter.put('/update-profile', updateProfile);
+userRouter.put('/update-interests', updateInterests);
 
 module.exports = userRouter;

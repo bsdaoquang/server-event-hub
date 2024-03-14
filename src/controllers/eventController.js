@@ -2,6 +2,7 @@
 
 const asyncHandle = require('express-async-handler');
 const EventModel = require('../models/eventModel');
+const CategoryModel = require('../models/categoryModel');
 
 const calcDistanceLocation = ({
 	currentLat,
@@ -110,4 +111,32 @@ const getFollowers = asyncHandle(async (req, res) => {
 	}
 });
 
-module.exports = { addNewEvent, getEvents, updateFollowers, getFollowers };
+const createCategory = asyncHandle(async (req, res) => {
+	const data = req.body;
+
+	const newCategory = new CategoryModel(data);
+
+	newCategory.save();
+	res.status(200).json({
+		message: 'Add new category successfully!!!',
+		data: newCategory,
+	});
+});
+
+const getCategories = asyncHandle(async (req, res) => {
+	const items = await CategoryModel.find({});
+
+	res.status(200).json({
+		message: 'get successfully!!!',
+		data: items,
+	});
+});
+
+module.exports = {
+	addNewEvent,
+	getEvents,
+	updateFollowers,
+	getFollowers,
+	createCategory,
+	getCategories,
+};
