@@ -185,6 +185,41 @@ const updateInterests = asyncHandle(async (req, res) => {
 		throw new Error('Missing data');
 	}
 });
+
+const toggleFollowing = asyncHandle(async (req, res) => {
+	const { uid, authorId } = req.body;
+
+	if (uid && authorId) {
+		const user = await UserModel.findById(uid);
+
+		if (user) {
+			const { following } = user;
+
+			const items = following ?? [];
+			const index = items.findIndex((element) => element === authorId);
+			if (index !== -1) {
+				items.splice(index, 1);
+			} else {
+				items.push(`${authorId}`);
+			}
+
+			await UserModel.findByIdAndUpdate(uid, {
+				following: items,
+			});
+
+			res.status(200).json({
+				message: 'update following successfully!!!',
+				data: items,
+			});
+		} else {
+			res.sendStatus(404);
+			throw new Error('user or author not found!!!');
+		}
+	} else {
+		res.sendStatus(404);
+		throw new Error('Missing data!!');
+	}
+});
 module.exports = {
 	getAllUsers,
 	getEventsFollowed,
@@ -193,4 +228,5 @@ module.exports = {
 	getFollowes,
 	updateProfile,
 	updateInterests,
+	toggleFollowing,
 };

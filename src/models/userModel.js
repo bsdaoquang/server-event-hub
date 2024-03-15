@@ -1,6 +1,6 @@
 /** @format */
 
-const { default: mongoose } = require('mongoose');
+const { default: mongoose, isValidObjectId, Schema } = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -38,6 +38,9 @@ const UserSchema = new mongoose.Schema({
 		type: [String],
 	},
 	following: {
+		type: [String],
+	},
+	followers: {
 		type: [String],
 	},
 	interests: {
