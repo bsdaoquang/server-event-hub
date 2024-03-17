@@ -10,6 +10,7 @@ const {
 	updateProfile,
 	updateInterests,
 	toggleFollowing,
+	getFollowings,
 } = require('../controllers/userController');
 
 const userRouter = Router();
@@ -19,6 +20,7 @@ userRouter.get('/get-followed-events', getEventsFollowed);
 userRouter.post('/update-fcmtoken', updateFcmToken);
 userRouter.get('/get-profile', getProfile);
 userRouter.get('/get-followers', getFollowes);
+userRouter.get('/get-follwings', getFollowings);
 userRouter.put('/update-profile', updateProfile);
 userRouter.put('/update-interests', updateInterests);
 userRouter.put('/update-following', toggleFollowing);

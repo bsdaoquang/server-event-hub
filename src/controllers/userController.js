@@ -145,8 +145,23 @@ const getFollowes = asyncHandle(async (req, res) => {
 			data: ids,
 		});
 	} else {
-		throw new Error('can not find uid');
 		res.sendStatus(404);
+		throw new Error('can not find uid');
+	}
+});
+const getFollowings = asyncHandle(async (req, res) => {
+	const { uid } = req.query;
+
+	if (uid) {
+		const user = await UserModel.findById(uid);
+
+		res.status(200).json({
+			message: '',
+			data: user.following,
+		});
+	} else {
+		res.sendStatus(404);
+		throw new Error('can not find uid');
 	}
 });
 
@@ -229,4 +244,5 @@ module.exports = {
 	updateProfile,
 	updateInterests,
 	toggleFollowing,
+	getFollowings,
 };
