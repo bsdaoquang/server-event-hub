@@ -43,6 +43,17 @@ const addNewEvent = asyncHandle(async (req, res) => {
 	}
 });
 
+const getEventById = asyncHandle(async (req, res) => {
+	const { id } = req.query;
+
+	console.log(id);
+
+	res.status(200).json({
+		message: 'fafa',
+		data: [],
+	});
+});
+
 const getEvents = asyncHandle(async (req, res) => {
 	const { lat, long, distance, limit, date } = req.query;
 
@@ -139,4 +150,5 @@ module.exports = {
 	getFollowers,
 	createCategory,
 	getCategories,
+	getEventById,
 };

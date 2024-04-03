@@ -6,6 +6,28 @@ const { query } = require('express');
 const EventModel = require('../models/eventModel');
 const http = require('http');
 
+const nodemailer = require('nodemailer');
+require('dotenv').config();
+
+const transporter = nodemailer.createTransport({
+	host: 'smtp.gmail.com',
+	port: 587,
+	auth: {
+		user: process.env.USERNAME_EMAIL,
+		pass: process.env.PASSWORD_EMAIL,
+	},
+});
+
+const handleSendMail = async (val) => {
+	try {
+		await transporter.sendMail(val);
+
+		return 'OK';
+	} catch (error) {
+		return error;
+	}
+};
+
 const getAllUsers = asyncHandle(async (req, res) => {
 	const users = await UserModel.find({});
 
@@ -86,7 +108,13 @@ const updateFcmToken = asyncHandle(async (req, res) => {
 	});
 });
 
-const handleSendNotification = async () => {
+const handleSendNotification = async ({
+	fcmTokens,
+	title,
+	subtitle,
+	body,
+	data,
+}) => {
 	var request = require('request');
 	var options = {
 		method: 'POST',
@@ -97,14 +125,13 @@ const handleSendNotification = async () => {
 				'key=AAAAYQVzHAg:APA91bHeOlIP2Ga6OdcOp3_UVnfqSNA32Ddum6-bbj3VFyfA32WGlaZfZ13qLrV6nz20H7k81X0GOy1Y2Qp6LAqFHrfhNB3E8tm9cFG4f2KJ2ehWdFA70PmYALvs1HS0whcyKmtIdpdk',
 		},
 		body: JSON.stringify({
-			registration_ids: [
-				'fqkKacfqSFWvJnFBEVsUDT:APA91bGffTunAovCwcdgQuB0eu4dAYrd5S6qVkImlzr96P-7SKasvte2tY3cPCdgqsn82jE1PReOOdcecXFosDBYUnI5L5pazJgPDhMlJjNym1RMHYXhPa4S_qXWFFMO_0koqLPp2DQi',
-			],
+			registration_ids: fcmTokens,
 			notification: {
-				title: 'title',
-				subtitle: 'sub title',
-				body: 'content of message',
+				title,
+				subtitle,
+				body,
 				sound: 'default',
+				data,
 			},
 			contentAvailable: 'true',
 			priority: 'high',
@@ -235,6 +262,43 @@ const toggleFollowing = asyncHandle(async (req, res) => {
 		throw new Error('Missing data!!');
 	}
 });
+
+const pushInviteNotifications = asyncHandle(async (req, res) => {
+	const { ids, eventId } = req.body;
+
+	ids.forEach(async (id) => {
+		const user = await UserModel.findById(id);
+
+		if (user.fcmTokens) {
+			await handleSendNotification({
+				fcmTokens: user.fcmTokens,
+				title: 'fasfasf',
+				subtitle: '',
+				body: 'Bạn đã được mời tham gia vào sự kiện nào đó',
+				data: {
+					eventId,
+				},
+			});
+		} else {
+			// Send mail
+			const data = {
+				from: `"Support EventHub Appplication" <${process.env.USERNAME_EMAIL}>`,
+				to: email,
+				subject: 'Verification email code',
+				text: 'Your code to verification email',
+				html: `<h1>${eventId}</h1>`,
+			};
+
+			await handleSendMail(data);
+		}
+	});
+
+	res.status(200).json({
+		message: 'fafaf',
+		data: [],
+	});
+});
+
 module.exports = {
 	getAllUsers,
 	getEventsFollowed,
@@ -245,4 +309,5 @@ module.exports = {
 	updateInterests,
 	toggleFollowing,
 	getFollowings,
+	pushInviteNotifications,
 };

@@ -8,6 +8,7 @@ const {
 	getFollowers,
 	createCategory,
 	getCategories,
+	getEventById,
 } = require('../controllers/eventController');
 
 const eventRouter = Router();
@@ -18,5 +19,6 @@ eventRouter.post('/update-followes', updateFollowers);
 eventRouter.get('/followers', getFollowers);
 eventRouter.post('/create-category', createCategory);
 eventRouter.get('/get-categories', getCategories);
+eventRouter.get('/get-event', getEventById);
 
 module.exports = eventRouter;

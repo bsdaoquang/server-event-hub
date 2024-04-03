@@ -11,6 +11,7 @@ const {
 	updateInterests,
 	toggleFollowing,
 	getFollowings,
+	pushInviteNotifications,
 } = require('../controllers/userController');
 
 const userRouter = Router();
@@ -24,5 +25,6 @@ userRouter.get('/get-follwings', getFollowings);
 userRouter.put('/update-profile', updateProfile);
 userRouter.put('/update-interests', updateInterests);
 userRouter.put('/update-following', toggleFollowing);
+userRouter.post('/send-invite', pushInviteNotifications);
 
 module.exports = userRouter;
