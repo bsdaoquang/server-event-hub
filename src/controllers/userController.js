@@ -2,9 +2,8 @@
 
 const asyncHandle = require('express-async-handler');
 const UserModel = require('../models/userModel');
-const { query } = require('express');
 const EventModel = require('../models/eventModel');
-const http = require('http');
+const { JWT } = require('google-auth-library');
 
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -39,8 +38,6 @@ const getAllUsers = asyncHandle(async (req, res) => {
 			id: item.id,
 		})
 	);
-
-	await handleSendNotification();
 
 	res.status(200).json({
 		message: 'Get users successfully!!!',
@@ -108,8 +105,28 @@ const updateFcmToken = asyncHandle(async (req, res) => {
 	});
 });
 
+const getAccessToken = () => {
+	return new Promise(function (resolve, reject) {
+		const key = require('../evenhub-accesstoken-file.json');
+		const jwtClient = new JWT(
+			key.client_email,
+			null,
+			key.private_key,
+			['https://www.googleapis.com/auth/cloud-platform'],
+			null
+		);
+		jwtClient.authorize(function (err, tokens) {
+			if (err) {
+				reject(err);
+				return;
+			}
+			resolve(tokens.access_token);
+		});
+	});
+};
+
 const handleSendNotification = async ({
-	fcmTokens,
+	token,
 	title,
 	subtitle,
 	body,
@@ -118,40 +135,28 @@ const handleSendNotification = async ({
 	var request = require('request');
 	var options = {
 		method: 'POST',
-		url: 'https://fcm.googleapis.com/fcm/send',
+		url: 'https://fcm.googleapis.com/v1/projects/evenhub-f8c6e/messages:send',
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization:
-				'key=AAAAYQVzHAg:APA91bHeOlIP2Ga6OdcOp3_UVnfqSNA32Ddum6-bbj3VFyfA32WGlaZfZ13qLrV6nz20H7k81X0GOy1Y2Qp6LAqFHrfhNB3E8tm9cFG4f2KJ2ehWdFA70PmYALvs1HS0whcyKmtIdpdk',
+			Authorization: `Bearer ${await getAccessToken()}`,
 		},
 		body: JSON.stringify({
-			registration_ids: fcmTokens,
-			notification: {
-				title,
-				subtitle,
-				body,
-				sound: 'default',
+			message: {
+				token,
+				notification: {
+					title,
+					body,
+					subtitle,
+				},
 				data,
-			},
-			contentAvailable: 'true',
-			priority: 'high',
-			apns: {
-				payload: {
-					aps: {
-						contentAvailable: 'true',
-					},
-				},
-				headers: {
-					'apns-push-type': 'background',
-					'apns-priority': '5',
-					'apns-topic': '',
-				},
 			},
 		}),
 	};
 	request(options, function (error, response) {
 		if (error) throw new Error(error);
-		console.log(response.body);
+		console.log(error);
+
+		console.log(response);
 	});
 };
 
@@ -269,16 +274,21 @@ const pushInviteNotifications = asyncHandle(async (req, res) => {
 	ids.forEach(async (id) => {
 		const user = await UserModel.findById(id);
 
-		if (user.fcmTokens) {
-			await handleSendNotification({
-				fcmTokens: user.fcmTokens,
-				title: 'fasfasf',
-				subtitle: '',
-				body: 'Bạn đã được mời tham gia vào sự kiện nào đó',
-				data: {
-					eventId,
-				},
-			});
+		const fcmTokens = user.fcmTokens;
+
+		if (fcmTokens > 0) {
+			fcmTokens.forEach(
+				async (token) =>
+					await handleSendNotification({
+						fcmTokens: token,
+						title: 'fasfasf',
+						subtitle: '',
+						body: 'Bạn đã được mời tham gia vào sự kiện nào đó',
+						data: {
+							eventId,
+						},
+					})
+			);
 		} else {
 			// Send mail
 			const data = {
@@ -299,6 +309,22 @@ const pushInviteNotifications = asyncHandle(async (req, res) => {
 	});
 });
 
+const pushTestNoti = asyncHandle(async (req, res) => {
+	const { title, body, data } = req.body;
+
+	console.log(title);
+
+	// await handleSendNotification({
+	// 	data,
+	// 	title,
+	// 	body,
+	// });
+
+	res.status(200).json({
+		message: 'fafa',
+		data: [],
+	});
+});
 module.exports = {
 	getAllUsers,
 	getEventsFollowed,
@@ -310,4 +336,5 @@ module.exports = {
 	toggleFollowing,
 	getFollowings,
 	pushInviteNotifications,
+	pushTestNoti,
 };
