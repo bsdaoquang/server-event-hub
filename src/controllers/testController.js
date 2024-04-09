@@ -58,7 +58,7 @@ const getCategoryById = asyncHandle(async (req, res) => {
 const getPlantByCategoryId = asyncHandle(async (req, res) => {
 	const { id } = req.query;
 
-	const items = await PlantModel.find({ categories: $all(id) });
+	const items = await PlantModel.find({ categories: { $all: id } });
 
 	res.status(200).json({
 		message: 'Add new category successfully!!!',
