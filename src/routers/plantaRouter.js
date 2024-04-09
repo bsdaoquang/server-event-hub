@@ -7,6 +7,7 @@ const {
 	addCategories,
 	getCategories,
 	getCategoryById,
+	getPlantByCategoryId,
 } = require('../controllers/testController');
 
 const testRouter = Router();
@@ -16,5 +17,6 @@ testRouter.get('/get-plants', getAllPlant);
 testRouter.post('/add-category', addCategories);
 testRouter.get('/categories', getCategories);
 testRouter.get('/category', getCategoryById);
+testRouter.get('/getAllByCatId', getPlantByCategoryId);
 
 module.exports = testRouter;
