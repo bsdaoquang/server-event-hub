@@ -93,6 +93,20 @@ const getEvents = asyncHandle(async (req, res) => {
 		});
 	}
 });
+const searchEvents = asyncHandle(async (req, res) => {
+	const { title } = req.query;
+
+	const events = await EventModel.find({});
+
+	const items = events.filter((element) =>
+		element.title.toLowerCase().includes(title.toLocaleLowerCase())
+	);
+
+	res.status(200).json({
+		message: 'get events ok',
+		data: items,
+	});
+});
 
 const updateFollowers = asyncHandle(async (req, res) => {
 	const body = req.body;
@@ -151,4 +165,5 @@ module.exports = {
 	createCategory,
 	getCategories,
 	getEventById,
+	searchEvents,
 };

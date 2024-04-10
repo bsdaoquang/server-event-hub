@@ -9,6 +9,7 @@ const {
 	createCategory,
 	getCategories,
 	getEventById,
+	searchEvents,
 } = require('../controllers/eventController');
 
 const eventRouter = Router();
@@ -20,5 +21,6 @@ eventRouter.get('/followers', getFollowers);
 eventRouter.post('/create-category', createCategory);
 eventRouter.get('/get-categories', getCategories);
 eventRouter.get('/get-event', getEventById);
+eventRouter.get('/search-events', searchEvents);
 
 module.exports = eventRouter;
