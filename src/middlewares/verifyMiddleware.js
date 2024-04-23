@@ -12,6 +12,7 @@ const verifyToken = asyncHandle((req, res, next) => {
 		throw new Error('Un authorization!!');
 	} else {
 		try {
+			// console.log(token);
 			const verify = jwt.verify(token, process.env.SECRET_KEY);
 
 			if (verify) {

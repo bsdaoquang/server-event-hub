@@ -49,7 +49,7 @@ const getEventById = asyncHandle(async (req, res) => {
 	const item = await EventModel.findById(id);
 
 	res.status(200).json({
-		message: 'fafa',
+		message: 'Event detail',
 		data: item ? item : [],
 	});
 });
@@ -150,8 +150,6 @@ const createCategory = asyncHandle(async (req, res) => {
 
 const getCategories = asyncHandle(async (req, res) => {
 	const items = await CategoryModel.find({});
-
-	console.log(items);
 
 	res.status(200).json({
 		message: 'get successfully!!!',
