@@ -151,6 +151,8 @@ const createCategory = asyncHandle(async (req, res) => {
 const getCategories = asyncHandle(async (req, res) => {
 	const items = await CategoryModel.find({});
 
+	console.log(items);
+
 	res.status(200).json({
 		message: 'get successfully!!!',
 		data: items,
