@@ -8,6 +8,7 @@ const userRouter = require('./src/routers/userRouter');
 const { verification } = require('./src/controllers/authController');
 const verifyToken = require('./src/middlewares/VerifyMiddleware');
 const eventRouter = require('./src/routers/eventRouter');
+const testRouter = require('./src/routers/plantaRouter');
 const app = express();
 require('dotenv').config();
 
@@ -17,9 +18,6 @@ app.use(express.json());
 const PORT = 3001;
 
 app.use('/auth', authRouter);
-
-app.use('/users', verifyToken, userRouter);
-app.use('/events', verifyToken, eventRouter);
 
 connectDB();
 
