@@ -5,7 +5,7 @@ const authRouter = require('./src/routers/authRouter');
 const connectDB = require('./src/configs/connectDb');
 const errorMiddleHandle = require('./src/middlewares/errorMiddleware');
 const userRouter = require('./src/routers/userRouter');
-const verifyToken = require('./src/middlewares/VerifyMiddleware');
+const verifyToken = require('./src/middlewares/verifyMiddleware');
 const eventRouter = require('./src/routers/eventRouter');
 const app = express();
 
