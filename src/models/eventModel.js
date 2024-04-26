@@ -48,11 +48,11 @@ const EventSchema = new mongoose.Schema({
 		required: true,
 	},
 	price: {
-		type: String,
+		type: Number,
 		required: true,
 	},
 	categories: {
-		type: [String],
+		type: String,
 		required: true,
 	},
 	date: {
