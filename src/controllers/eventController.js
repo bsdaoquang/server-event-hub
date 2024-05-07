@@ -177,12 +177,37 @@ const createCategory = asyncHandle(async (req, res) => {
 	});
 });
 
+const updateCategory = asyncHandle(async(req, res) => {
+	const data = req.body;
+	const { id } = req.query;
+
+	const item = await CategoryModel.findByIdAndUpdate(id, data);
+
+	res.status(200).json({
+		message: 'Update category successfully!!!',
+		data: item,
+	});
+	
+	
+})
+
 const getCategories = asyncHandle(async (req, res) => {
 	const items = await CategoryModel.find({});
 
 	res.status(200).json({
 		message: 'get successfully!!!',
 		data: items,
+	});
+});
+const getCategoryDetail = asyncHandle(async (req, res) => {
+
+	const {id} = req.query
+
+	const item = await CategoryModel.findById(id);
+
+	res.status(200).json({
+		message: 'get successfully!!!',
+		data: item,
 	});
 });
 
@@ -251,6 +276,8 @@ module.exports = {
 	getFollowers,
 	createCategory,
 	getCategories,
+	updateCategory,
+	getCategoryDetail,
 	getEventById,
 	searchEvents,
 	updateEvent,

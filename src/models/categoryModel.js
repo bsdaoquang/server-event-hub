@@ -10,6 +10,15 @@ const CategorySchema = new mongoose.Schema({
 	key: {
 		type: String,
 	},
+	iconColor: {
+		type: String
+	},
+	iconWhite: {
+		type: String,
+	},
+	color: {
+		type: String
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now(),
