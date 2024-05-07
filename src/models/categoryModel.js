@@ -8,7 +8,7 @@ const CategorySchema = new mongoose.Schema({
 		type: String,
 	},
 	key: {
-		type: Number,
+		type: String,
 	},
 	createdAt: {
 		type: Date,

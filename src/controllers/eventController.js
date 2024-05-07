@@ -190,8 +190,6 @@ const updateEvent = asyncHandle(async (req, res) => {
 	const data = req.body;
 	const { id } = req.query;
 
-	console.log(data, id);
-
 	const item = await EventModel.findByIdAndUpdate(id, data);
 
 	res.status(200).json({
