@@ -84,9 +84,13 @@ const getEventById = asyncHandle(async (req, res) => {
 });
 
 const getEvents = asyncHandle(async (req, res) => {
-	const { lat, long, distance, limit, date } = req.query;
+	const { lat, long, distance, limit, date, categoryId } = req.query;
 
-	const events = await EventModel.find({})
+	const filter = categoryId ? {
+		categories: {$eq: categoryId}
+	} : {}
+
+	const events = await EventModel.find(filter)
 		.sort({ createdAt: -1 })
 		.limit(limit ?? 0);
 
