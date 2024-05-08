@@ -84,11 +84,17 @@ const getEventById = asyncHandle(async (req, res) => {
 });
 
 const getEvents = asyncHandle(async (req, res) => {
-	const { lat, long, distance, limit, date, categoryId } = req.query;
+	const { lat, long, distance, limit, date, categoryId, isUpcoming } = req.query;
 
-	const filter = categoryId ? {
-		categories: {$eq: categoryId}
-	} : {}
+	const filter = {}
+
+		categoryId ? {
+			categories: {$eq: categoryId}
+		} : {}
+
+	if (isUpcoming) {
+		filter.startAt = {$gt: Date.now()}
+	}
 
 	const events = await EventModel.find(filter)
 		.sort({ createdAt: -1 })
