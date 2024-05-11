@@ -9,7 +9,6 @@ const {
 	createCategory,
 	getCategories,
 	getEventById,
-	searchEvents,
 	updateEvent,
 	getEventsByCategoyId,
 	handleAddNewBillDetail,
@@ -29,7 +28,6 @@ eventRouter.get('/get-categories', getCategories);
 eventRouter.put('/update-category', updateCategory)
 eventRouter.get('/get-category', getCategoryDetail)
 eventRouter.get('/get-event', getEventById);
-eventRouter.get('/search-events', searchEvents);
 eventRouter.put('/update-event', updateEvent);
 eventRouter.get('/get-events-by-categoryid', getEventsByCategoyId);
 eventRouter.post('/buy-ticket', handleAddNewBillDetail);

@@ -51,11 +51,9 @@ const toRoad = (val) => (val * Math.PI) / 180;
 const addNewEvent = asyncHandle(async (req, res) => {
 	const body = req.body;
 
-	console.log(body);
+	
 	const data = { ...body };
 	data.price = parseFloat(body.price);
-
-	console.log(data);
 
 	if (data) {
 		const newEvent = new EventModel(data);
@@ -84,14 +82,35 @@ const getEventById = asyncHandle(async (req, res) => {
 });
 
 const getEvents = asyncHandle(async (req, res) => {
-	const { lat, long, distance, limit, date, categoryId, isUpcoming, isPastEvents } = req.query;
+	const { lat, long, distance, limit, startAt, endAt, date, categoryId, isUpcoming, isPastEvents, title } = req.query;
 
+	
 	const filter = {}
+	
+	if (categoryId) {
+		if (categoryId.includes(',')) {
 
-		categoryId ? {
-			categories: {$eq: categoryId}
-		} : {}
+			const values = []
 
+			
+			categoryId.split(',').forEach(id => values.push({
+				categories: {$eq: id}
+			}))
+			
+			console.log(values)
+			// filter = {$or: [...values]}
+			
+		}else{
+
+			filter.categories = {$eq: categoryId}
+		}
+	}
+
+	if (startAt && endAt) {
+		filter.startAt = {$gt: new Date(startAt).getTime()}
+		filter.endAt = {$lt: new Date(endAt).getTime()}
+	}
+		
 	if (isUpcoming) {
 		filter.startAt = {$gt: Date.now()}
 	}
@@ -99,6 +118,11 @@ const getEvents = asyncHandle(async (req, res) => {
 	if (isPastEvents) {
 		filter.endAt = {$lt: Date.now()}
 	}
+
+	if (title) {
+		filter.title = {$regex: title}
+	}
+
 
 	const events = await EventModel.find(filter)
 		.sort({ createdAt: -1 })
@@ -121,11 +145,11 @@ const getEvents = asyncHandle(async (req, res) => {
 			});
 		}
 
+		console.log(items.length)
+
 		res.status(200).json({
 			message: 'get events ok',
-			data: date
-				? items.filter((element) => element.date > new Date(date))
-				: items,
+			data:items,
 		});
 	} else {
 		res.status(200).json({
@@ -136,20 +160,7 @@ const getEvents = asyncHandle(async (req, res) => {
 		});
 	}
 });
-const searchEvents = asyncHandle(async (req, res) => {
-	const { title } = req.query;
 
-	const events = await EventModel.find({});
-
-	const items = events.filter((element) =>
-		element.title.toLowerCase().includes(title.toLocaleLowerCase())
-	);
-
-	res.status(200).json({
-		message: 'get events ok',
-		data: items,
-	});
-});
 
 const updateFollowers = asyncHandle(async (req, res) => {
 	const body = req.body;
@@ -293,7 +304,6 @@ module.exports = {
 	updateCategory,
 	getCategoryDetail,
 	getEventById,
-	searchEvents,
 	updateEvent,
 	getEventsByCategoyId,
 	handleAddNewBillDetail,
