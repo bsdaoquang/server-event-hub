@@ -89,14 +89,7 @@ const getEvents = asyncHandle(async (req, res) => {
 	
 	if (categoryId) {
 		if (categoryId.includes(',')) {
-
-			const values = []
-
-			
-			categoryId.split(',').forEach(id => values.push({
-				categories: {$eq: id}
-			}))
-			
+			filter.categories = {$in: categoryId.split(',')}
 		}else{
 
 			filter.categories = {$eq: categoryId}
@@ -120,13 +113,8 @@ const getEvents = asyncHandle(async (req, res) => {
 		filter.title = {$regex: title}
 	}
 
-	if (minPrice) {
-		filter.price = {$gte: parseFloat(minPrice)}
-	}
-
-
-	if (maxPrice) {
-		filter.price = {$lte: parseInt(maxPrice)}
+	if (maxPrice && minPrice) {
+		filter.price = {$lte: parseInt(maxPrice), $gte: parseFloat(minPrice)}
 	}
 
 	const events = await EventModel.find(filter)
