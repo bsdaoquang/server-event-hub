@@ -67,9 +67,6 @@ const getEventsFollowed = asyncHandle(async (req, res) => {
 const getProfile = asyncHandle(async (req, res) => {
 	const { uid } = req.query;
 
-	// const accesstoken = await getAccessToken();
-	// console.log(accesstoken);
-
 	if (uid) {
 		const profile = await UserModel.findOne({ _id: uid });
 
