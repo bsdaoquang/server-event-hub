@@ -227,6 +227,31 @@ const getCategoryDetail = asyncHandle(async (req, res) => {
 	});
 });
 
+const joinEvent = asyncHandle(async (req, res) => {
+	const {uid, eventId} = req.query
+
+	const itemEvent = await EventModel.findById(eventId)
+
+	const joined = itemEvent.joined ? itemEvent.joined : []
+	
+	if (joined.includes(uid)) {
+		const index = joined.findIndex(element => element === uid)
+
+		joined.splice(index, 1)
+	}else{
+		joined.push(uid)
+	}
+
+	await EventModel.findByIdAndUpdate(eventId, {
+		joined
+	})
+	
+	res.status(200).json({
+		message: 'Added',
+		data: []
+	})
+})
+
 const updateEvent = asyncHandle(async (req, res) => {
 	const data = req.body;
 	const { id } = req.query;
@@ -299,4 +324,5 @@ module.exports = {
 	getEventsByCategoyId,
 	handleAddNewBillDetail,
 	handleUpdatePaymentSuccess,
+	joinEvent
 };
