@@ -94,6 +94,7 @@ const getProfile = asyncHandle(async (req, res) => {
 
 const updateFcmToken = asyncHandle(async (req, res) => {
 	const { uid, fcmTokens } = req.body;
+	
 
 	await UserModel.findByIdAndUpdate(uid, {
 		fcmTokens,
@@ -125,13 +126,15 @@ const getAccessToken = () => {
 	});
 };
 
+
+
 const handleSendNotification = async ({
-	token,
+	fcmTokens,
 	title,
-	subtitle,
 	body,
 	data,
 }) => {
+
 	var request = require('request');
 	var options = {
 		method: 'POST',
@@ -142,21 +145,20 @@ const handleSendNotification = async ({
 		},
 		body: JSON.stringify({
 			message: {
-				token,
+				token: fcmTokens,
 				notification: {
 					title,
 					body,
-					subtitle,
+				
 				},
 				data,
 			},
 		}),
 	};
 	request(options, function (error, response) {
+		console.log(response)
 		if (error) throw new Error(error);
 		console.log(error);
-
-		console.log(response);
 	});
 };
 
@@ -271,25 +273,29 @@ const toggleFollowing = asyncHandle(async (req, res) => {
 const pushInviteNotifications = asyncHandle(async (req, res) => {
 	const { ids, eventId } = req.body;
 
+	
 	ids.forEach(async (id) => {
 		const user = await UserModel.findById(id);
 
 		if (user) {
 			
 			const fcmTokens = user.fcmTokens;
-	
-			if (fcmTokens > 0) {
+		
+			if (fcmTokens.length > 0) {
 				fcmTokens.forEach(
 					async (token) =>
-						await handleSendNotification({
-							fcmTokens: token,
-							title: 'fasfasf',
-							subtitle: '',
-							body: 'Bạn đã được mời tham gia vào sự kiện nào đó',
-							data: {
-								eventId,
-							},
-						})
+						{
+							await handleSendNotification({
+								fcmTokens: token,
+								title: 'fasfasf',
+								subtitle: '',
+								body: 'Bạn đã được mời tham gia vào sự kiện nào đó',
+								data: {
+									eventId,
+								},
+							})
+							
+						}
 				);
 			} else {
 				// Send mail
